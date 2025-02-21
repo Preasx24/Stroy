@@ -3,37 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login System</title>
+    <title>ID Number Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin: 5px 0;
+            padding: 8px;
+            width: 200px;
+        }
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Login</h1>
-    <form id="login-form">
-        <input type="text" id="login-username" placeholder="Username" required />
-        <input type="password" id="login-password" placeholder="Password" required />
-        <button type="submit">Login</button>
+    <h1>ID Number Validation</h1>
+    <form id="id-validation-form">
+        <input type="text" id="id-number" placeholder="Enter ID Number" required />
+        <button type="submit">Validate</button>
     </form>
-    <div id="message"></div>
+    <div id="result-message"></div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
+        function isValidIDNumber(idNumber) {
+            const regex = /^\d{13}$/;
+            return regex.test(idNumber);
+        }
 
-            fetch('https://raw.githubusercontent.com/Preasx24/V/main/users.json')
-                .then(response => response.json())
-                .then(data => {
-                    const user = data.find(user => user.username === username && user.password === password);
-                    if (user) {
-                        document.getElementById('message').textContent = 'Login successful!';
-                        // Redirect or load user-specific content here
-                    } else {
-                        document.getElementById('message').textContent = 'Invalid username or password!';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                });
+        function isValidDateOfBirth(idNumber) {
+            const year = parseInt(idNumber.slice(0, 2));
+            const month = parseInt(idNumber.slice(2, 4));
+            const day = parseInt(idNumber.slice(4, 6));
+
+            const currentYear = new Date().getFullYear();
+            const fullYear = (year > currentYear % 100) ? 1900 + year : 2000 + year;
+
+            const date = new Date(fullYear, month - 1, day);
+            return date.getFullYear() === fullYear && date.getMonth() === month - 1 && date.getDate() === day;
+        }
+
+        function isValidChecksum(idNumber) {
+            let sum = 0;
+            const length = idNumber.length;
+
+            for (let i = 0; i < length - 1; i++) {
+                let digit = parseInt(idNumber.charAt(i));
+
+                if (i % 2 === length % 2) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+            }
+
+            const checksum = (10 - (sum % 10)) % 10;
+            return checksum === parseInt(idNumber.charAt(length - 1));
+        }
+
+        function validateIDNumber(idNumber) {
+            if (!isValidIDNumber(idNumber)) {
+                return "Invalid format.";
+            }
+            if (!isValidDateOfBirth(idNumber)) {
+                return "Invalid date of birth.";
+            }
+            if (!isValidChecksum(idNumber)) {
+                return "Invalid checksum.";
+            }
+            return "ID number is valid.";
+        }
+
+        document.getElementById('id-validation-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const idNumber = document.getElementById('id-number').value;
+            const result = validateIDNumber(idNumber);
+            document.getElementById('result-message').textContent = result;
         });
     </script>
 </body>
