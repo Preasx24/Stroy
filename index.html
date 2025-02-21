@@ -20,7 +20,7 @@
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
 
-            fetch('https://github.com/Preasx24/V/blob/main/users.json')
+            fetch('https://raw.githubusercontent.com/Preasx24/V/main/users.json')
                 .then(response => response.json())
                 .then(data => {
                     const user = data.find(user => user.username === username && user.password === password);
