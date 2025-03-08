@@ -3,86 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Number Validation</title>
+    <title>D-TECH | Submit a Question</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #0a0a0a;
+            color: #00ffcc;
+            text-align: center;
+            padding: 20px;
         }
-        input {
-            margin: 5px 0;
-            padding: 8px;
-            width: 200px;
+        h1 {
+            font-size: 28px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px #00ffcc;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input, textarea {
+            background: #1a1a1a;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
         }
         button {
-            padding: 8px 12px;
+            background: #00ffcc;
+            color: #0a0a0a;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #009977;
         }
     </style>
 </head>
 <body>
-    <h1>ID Number Validation</h1>
-    <form id="id-validation-form">
-        <input type="text" id="id-number" placeholder="Enter ID Number" required />
-        <button type="submit">Validate</button>
-    </form>
-    <div id="result-message"></div>
+
+    <h1>D-TECH QUESTION FORM</h1>
+    <p>Submit your question, and we'll get back to you!</p>
+
+    <div class="container">
+        <form id="questionForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="message" placeholder="Your Question" required></textarea>
+            <button type="submit">Send Question</button>
+        </form>
+    </div>
 
     <script>
-        function isValidIDNumber(idNumber) {
-            const regex = /^\d{13}$/;
-            return regex.test(idNumber);
-        }
-
-        function isValidDateOfBirth(idNumber) {
-            const year = parseInt(idNumber.slice(0, 2));
-            const month = parseInt(idNumber.slice(2, 4));
-            const day = parseInt(idNumber.slice(4, 6));
-
-            const currentYear = new Date().getFullYear();
-            const fullYear = (year > currentYear % 100) ? 1900 + year : 2000 + year;
-
-            const date = new Date(fullYear, month - 1, day);
-            return date.getFullYear() === fullYear && date.getMonth() === month - 1 && date.getDate() === day;
-        }
-
-        function isValidChecksum(idNumber) {
-            let sum = 0;
-            const length = idNumber.length;
-
-            for (let i = 0; i < length - 1; i++) {
-                let digit = parseInt(idNumber.charAt(i));
-
-                if (i % 2 === length % 2) {
-                    digit *= 2;
-                    if (digit > 9) digit -= 9;
-                }
-                sum += digit;
-            }
-
-            const checksum = (10 - (sum % 10)) % 10;
-            return checksum === parseInt(idNumber.charAt(length - 1));
-        }
-
-        function validateIDNumber(idNumber) {
-            if (!isValidIDNumber(idNumber)) {
-                return "Invalid format.";
-            }
-            if (!isValidDateOfBirth(idNumber)) {
-                return "Invalid date of birth.";
-            }
-            if (!isValidChecksum(idNumber)) {
-                return "Invalid checksum.";
-            }
-            return "ID number is valid.";
-        }
-
-        document.getElementById('id-validation-form').addEventListener('submit', function(event) {
+        document.getElementById("questionForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            const idNumber = document.getElementById('id-number').value;
-            const result = validateIDNumber(idNumber);
-            document.getElementById('result-message').textContent = result;
+            
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var message = document.getElementById("message").value;
+
+            // Generate a unique ID
+            var timestamp = Date.now();
+            var randomCode = Math.floor(1000 + Math.random() * 9000);
+            var uniqueID = "DTECH-" + timestamp + "-" + randomCode;
+
+            var subject = encodeURIComponent("[D-TECH Question] 🚀 From: " + name);
+            var body = encodeURIComponent(
+                "🔹 D-TECH QUESTION SUBMISSION 🔹\n" +
+                "==================================\n" +
+                "👤 Name: " + name + "\n" +
+                "📧 Email: " + email + "\n\n" +
+                "💬 Question:\n" + message + "\n\n" +
+                "==================================\n" +
+                "🔑 DTECH-ID: " + uniqueID + "\n" +
+                "🔹 [D-TECH VERIFIED MESSAGE] 🔹"
+            );
+
+            window.location.href = "mailto:YOUR-EMAIL@gmail.com?subject=" + subject + "&body=" + body;
         });
     </script>
+
 </body>
 </html>
